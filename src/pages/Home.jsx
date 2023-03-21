@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { useSearchParams } from "react-router-dom";
 import { PropTypes } from "prop-types";
-import { getAllNotes } from "../utils";
 import Header from "../components/Header";
 import SearchInput from "../components/SearchInput";
 import ActiveNotes from "../components/ActiveNotes";
@@ -28,9 +27,7 @@ class Home extends Component {
     this.state = {
       notes: [],
       initializing: true,
-      searchNotes: getAllNotes().filter((note) =>
-        note.title.toLowerCase().includes(props.defaultKeyword.toLowerCase())
-      ),
+      searchNotes: [],
       searchKeyword: props.defaultKeyword || "",
     };
 
@@ -49,6 +46,12 @@ class Home extends Component {
 
       this.setState({
         notes: [...activeNotes.data, ...archivedNotes.data],
+        searchNotes: [...activeNotes.data, ...archivedNotes.data].filter(
+          (note) =>
+            note.title
+              .toLowerCase()
+              .includes(this.props.defaultKeyword.toLowerCase())
+        ),
         initializing: false,
       });
     } catch (error) {
