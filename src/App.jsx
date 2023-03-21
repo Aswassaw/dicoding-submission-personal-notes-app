@@ -18,9 +18,13 @@ export default function App() {
 
   useEffect(() => {
     async function init() {
-      const { data } = await getUserLogged();
+      try {
+        const { data } = await getUserLogged();
 
-      setAuthData(() => ({ user: data, initializing: false }));
+        setAuthData(() => ({ user: data, initializing: false }));
+      } catch (error) {
+        setAuthData(() => ({ user: null, initializing: false }));
+      }
     }
 
     init();
@@ -35,15 +39,19 @@ export default function App() {
   }, [themeData]);
 
   const onLoginSuccess = async ({ accessToken }) => {
-    putAccessToken(accessToken);
-    const { data } = await getUserLogged();
+    try {
+      putAccessToken(accessToken);
+      const { data } = await getUserLogged();
 
-    setAuthData((prevState) => {
-      return {
-        ...prevState,
-        user: data,
-      };
-    });
+      setAuthData((prevState) => {
+        return {
+          ...prevState,
+          user: data,
+        };
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const onLogout = () => {

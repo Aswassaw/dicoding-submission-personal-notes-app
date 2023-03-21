@@ -20,7 +20,8 @@ export default function Header() {
               style={{ cursor: "pointer" }}
               onClick={() => toggleTheme()}
             >
-              Dark Mode
+              {localStorage.getItem("theme") === "light" ? "Dark" : "Light"}{" "}
+              Mode
             </p>
           </li>
           {authData.user ? (

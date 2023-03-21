@@ -68,8 +68,6 @@ class Home extends Component {
   };
 
   render() {
-    this.getNotes();
-
     if (this.state.initializing) {
       return null;
     }

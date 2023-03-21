@@ -40,17 +40,17 @@ class Detail extends Component {
     }
   }
 
-  deleteNoteHandler = (id) => {
-    deleteNote(id);
+  deleteNoteHandler = async (id) => {
+    await deleteNote(id);
 
     this.props.navigate("/");
   };
 
-  changeArchiveStatusHandler = (id) => {
+  changeArchiveStatusHandler = async (id) => {
     if (this.state.note.archived) {
-      unarchiveNote(id);
+      await unarchiveNote(id);
     } else {
-      archiveNote(id);
+      await archiveNote(id);
     }
 
     this.props.navigate("/");

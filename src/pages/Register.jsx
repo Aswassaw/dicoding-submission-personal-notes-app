@@ -23,7 +23,7 @@ function Register() {
           <h2>Silahkan register untuk mengakses aplikasi</h2>
           <RegisterInput register={onRegisterHandler} />
           <p>
-            Kembali ke <Link to="/">Login</Link>
+            Kembali ke <Link to="/">Login.</Link>
           </p>
         </section>
       </div>
