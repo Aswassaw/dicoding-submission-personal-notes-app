@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router";
 import AddNote from "./../components/AddNote";
 import Header from "./../components/Header";
-import { addNote } from "../utils";
+import { addNote } from "../utils/api";
 
 export default function Add() {
   const navigate = useNavigate();

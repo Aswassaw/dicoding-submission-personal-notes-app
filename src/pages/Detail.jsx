@@ -2,13 +2,9 @@ import React, { Component } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router";
 import { PropTypes } from "prop-types";
-import {
-  archiveOrUnarchiveNote,
-  deleteNote,
-  getAllNotes,
-  showFormattedDate,
-} from "../utils";
 import Header from "./../components/Header";
+import { archiveNote, deleteNote, getNote, unarchiveNote } from "../utils/api";
+import { showFormattedDate } from "../utils";
 
 function DetailWrapper() {
   const params = useParams();
@@ -22,12 +18,26 @@ class Detail extends Component {
     super(props);
 
     this.state = {
-      note: getAllNotes().filter((note) => note.id === this.props.id),
+      note: null,
+      initializing: true,
     };
 
     this.deleteNoteHandler = this.deleteNoteHandler.bind(this);
     this.changeArchiveStatusHandler =
       this.changeArchiveStatusHandler.bind(this);
+  }
+
+  async componentDidMount() {
+    try {
+      const detailNote = await getNote(this.props.id);
+
+      this.setState({
+        note: detailNote.data,
+        initializing: false,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   deleteNoteHandler = (id) => {
@@ -37,32 +47,38 @@ class Detail extends Component {
   };
 
   changeArchiveStatusHandler = (id) => {
-    archiveOrUnarchiveNote(id);
+    if (this.state.note.archived) {
+      unarchiveNote(id);
+    } else {
+      archiveNote(id);
+    }
 
     this.props.navigate("/");
   };
 
   render() {
+    if (this.state.initializing) {
+      return null;
+    }
+
     return (
       <>
         <Header />
         <div className="note-app__body">
           <div className="detail-page">
-            {this.state.note.length ? (
+            {this.state.note?.id ? (
               <>
-                <h1 className="detail-page__title">
-                  {this.state.note[0]?.title}
-                </h1>
+                <h1 className="detail-page__title">{this.state.note?.title}</h1>
                 <p className="detail-page__createdAt">
-                  {showFormattedDate(this.state.note[0]?.createdAt)}
+                  {showFormattedDate(this.state.note?.createdAt)}
                 </p>
-                <p className="detail-page__body">{this.state.note[0]?.body}</p>
+                <p className="detail-page__body">{this.state.note?.body}</p>
               </>
             ) : (
               <h1>Catatan dengan Id {this.props.id} tidak ditemukan.</h1>
             )}
           </div>
-          {this.state.note.length && (
+          {this.state.note?.id && (
             <div
               style={{
                 width: "60%",
@@ -73,17 +89,17 @@ class Detail extends Component {
               <div className="note-item__action">
                 <button
                   className="note-item__delete-button"
-                  onClick={() => this.deleteNoteHandler(this.state.note[0]?.id)}
+                  onClick={() => this.deleteNoteHandler(this.state.note?.id)}
                 >
                   Hapus
                 </button>
                 <button
                   className="note-item__archive-button"
                   onClick={() =>
-                    this.changeArchiveStatusHandler(this.state.note[0]?.id)
+                    this.changeArchiveStatusHandler(this.state.note?.id)
                   }
                 >
-                  {!this.state.note[0]?.archived ? "Arsipkan" : "Pindahkan"}
+                  {!this.state.note?.archived ? "Arsipkan" : "Pindahkan"}
                 </button>
               </div>
             </div>

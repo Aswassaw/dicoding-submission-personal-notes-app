@@ -7,6 +7,7 @@ import SearchInput from "../components/SearchInput";
 import ActiveNotes from "../components/ActiveNotes";
 import ArchiveNote from "./../components/ArchiveNote";
 import Footer from "./../components/Footer";
+import { getActiveNotes, getArchivedNotes } from "../utils/api";
 
 function HomeWrapper() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -25,7 +26,8 @@ class Home extends Component {
     super(props);
 
     this.state = {
-      notes: getAllNotes(),
+      notes: [],
+      initializing: true,
       searchNotes: getAllNotes().filter((note) =>
         note.title.toLowerCase().includes(props.defaultKeyword.toLowerCase())
       ),
@@ -33,7 +35,26 @@ class Home extends Component {
     };
 
     this.searchHandler = this.searchHandler.bind(this);
+    this.getNotes = this.getNotes.bind(this);
   }
+
+  async componentDidMount() {
+    this.getNotes();
+  }
+
+  getNotes = async () => {
+    try {
+      const activeNotes = await getActiveNotes();
+      const archivedNotes = await getArchivedNotes();
+
+      this.setState({
+        notes: [...activeNotes.data, ...archivedNotes.data],
+        initializing: false,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   searchHandler = (e) => {
     this.setState({
@@ -47,6 +68,12 @@ class Home extends Component {
   };
 
   render() {
+    this.getNotes();
+
+    if (this.state.initializing) {
+      return null;
+    }
+
     return (
       <>
         <Header />
